@@ -338,7 +338,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     $note      = trim($_POST['note'] ?? '');
     $payment = strtoupper(trim($_POST['payment_method'] ?? 'COD'));
 
-if (!in_array($payment, ['COD', 'BANK_ATM', 'BANK_QR', 'BANK_VISA'])) {
+if (!in_array($payment, ['COD', 'BANK_ATM', 'BANK_QR', 'BANK_VISA', 'PAYPAL'])) {
     $payment = 'COD';
 }
 
@@ -559,6 +559,10 @@ $insOrder = $pdo->prepare("
 
             $pdo->commit();
 
+            if ($payment === 'PAYPAL') {
+                header('Location: paypal_redirect.php?orderId=' . urlencode($orderId));
+                exit;
+            }
 
 if (in_array($payment, ['BANK_ATM', 'BANK_QR', 'BANK_VISA'])) {
 
@@ -856,6 +860,12 @@ $prefill_name  = $_POST['full_name'] ?? ($userProfile['FullName'] ?? $currentUse
                                         <input type="radio" name="payment_method" value="BANK_VISA"
                                             <?php echo (($_POST['payment_method'] ?? '') === 'BANK_VISA') ? 'checked' : ''; ?>>
                                         <span>Thanh toán thẻ Visa/Mastercard/JCB</span>
+                                    </label>
+
+                                    <label class="checkout-radio-option">
+                                        <input type="radio" name="payment_method" value="PAYPAL"
+                                            <?php echo (($_POST['payment_method'] ?? '') === 'PAYPAL') ? 'checked' : ''; ?>>
+                                        <span>Thanh toán PayPal</span>
                                     </label>
 
                                     <label class="checkout-radio-option">
