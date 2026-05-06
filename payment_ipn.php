@@ -2,7 +2,7 @@
 session_start();
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 require_once 'db_connect.php';
-
+require_once 'mail_helper.php';
 /*
 |--------------------------------------------------------------------------
 | MoMo config
@@ -196,7 +196,7 @@ try {
             WHERE OrderID = :oid
         ");
         $updOrder->execute([':oid' => $internalOrderId]);
-
+        sendOrderSuccessMail($pdo, $orderId);
         // Xóa cart của user sau khi thanh toán thành công
         $clearCart = $pdo->prepare("
             DELETE ci

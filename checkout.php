@@ -6,7 +6,7 @@
 session_start();
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 require_once 'db_connect.php';
-
+require_once 'mail_helper.php';
 /* =========================
    AUTH / USER
 ========================= */
@@ -338,7 +338,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     $note      = trim($_POST['note'] ?? '');
     $payment = strtoupper(trim($_POST['payment_method'] ?? 'COD'));
 
-if (!in_array($payment, ['COD', 'BANK_ATM', 'BANK_QR', 'BANK_VISA'])) {
+if (!in_array($payment, ['COD', 'BANK_ATM', 'BANK_QR', 'BANK_VISA', 'PAYPAL'])) {
     $payment = 'COD';
 }
 
@@ -558,7 +558,60 @@ $insOrder = $pdo->prepare("
             
 
             $pdo->commit();
+if ($payment === 'COD') {
+    sendOrderSuccessMail($pdo, $orderId);
+}            if ($payment === 'PAYPAL') {
+    $businessEmail = 'sb-c8jgx50940429@business.example.com'; // email business sandbox của PayPal
+    $paypalUrl = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 
+    // Đổi VND sang USD
+    $amountUSD = $grandTotal / 24000;
+    $amount = number_format($amountUSD, 2, '.', '');
+
+    $itemName = 'Thanh toán đơn hàng ' . $orderId;
+
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || ($_SERVER['SERVER_PORT'] ?? '') === '443' ? 'https' : 'http';
+
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+    $baseUrl = $scheme . '://' . $host . $scriptDir;
+
+    $returnUrl = $baseUrl . '/paypal_return.php?orderId=' . urlencode($orderId);
+    $cancelUrl = $baseUrl . '/paypal_return.php?orderId=' . urlencode($orderId) . '&cancel=1';
+
+    ?>
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <title>Đang chuyển đến PayPal...</title>
+    </head>
+    <body>
+        <form id="paypalForm" action="<?php echo htmlspecialchars($paypalUrl); ?>" method="post">
+            <input type="hidden" name="cmd" value="_xclick">
+            <input type="hidden" name="business" value="<?php echo htmlspecialchars($businessEmail); ?>">
+            <input type="hidden" name="item_name" value="<?php echo htmlspecialchars($itemName); ?>">
+            <input type="hidden" name="item_number" value="<?php echo htmlspecialchars($orderId); ?>">
+            <input type="hidden" name="amount" value="<?php echo htmlspecialchars($amount); ?>">
+            <input type="hidden" name="currency_code" value="USD">
+            <input type="hidden" name="invoice" value="<?php echo htmlspecialchars($orderId); ?>">
+            <input type="hidden" name="return" value="<?php echo htmlspecialchars($returnUrl); ?>">
+            <input type="hidden" name="cancel_return" value="<?php echo htmlspecialchars($cancelUrl); ?>">
+            <input type="hidden" name="rm" value="2">
+            <input type="hidden" name="charset" value="UTF-8">
+            <input type="hidden" name="no_note" value="1">
+            <input type="hidden" name="no_shipping" value="1">
+        </form>
+
+        <script>
+            document.getElementById('paypalForm').submit();
+        </script>
+    </body>
+    </html>
+    <?php
+    exit;
+}
 
 if (in_array($payment, ['BANK_ATM', 'BANK_QR', 'BANK_VISA'])) {
 
@@ -622,7 +675,7 @@ $prefill_name  = $_POST['full_name'] ?? ($userProfile['FullName'] ?? $currentUse
     <title>Thanh toán - Moonlit Store</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="moonlit-style.css">
+    <link rel="stylesheet" href="moonlit-style.css?v=10">
 </head>
 
 <body class="account-body">
@@ -850,18 +903,28 @@ $prefill_name  = $_POST['full_name'] ?? ($userProfile['FullName'] ?? $currentUse
                                         <input type="radio" name="payment_method" value="BANK_ATM"
                                             <?php echo (($_POST['payment_method'] ?? '') === 'BANK_ATM') ? 'checked' : ''; ?>>
                                         <span>Thanh toán ATM nội địa</span>
+                                        <img src="img/momo.png" alt="Momo logo" class="payment-logo">
                                     </label>
 
                                     <label class="checkout-radio-option">
                                         <input type="radio" name="payment_method" value="BANK_VISA"
                                             <?php echo (($_POST['payment_method'] ?? '') === 'BANK_VISA') ? 'checked' : ''; ?>>
                                         <span>Thanh toán thẻ Visa/Mastercard/JCB</span>
+                                        <img src="img/momo.png" alt="Momo logo" class="payment-logo">
+                                    </label>
+
+                                    <label class="checkout-radio-option">
+                                        <input type="radio" name="payment_method" value="PAYPAL"
+                                            <?php echo (($_POST['payment_method'] ?? '') === 'PAYPAL') ? 'checked' : ''; ?>>
+                                        <span>Thanh toán PayPal</span>
+                                        <img src="img/paypal.png" alt="Paypal logo" class="payment-logo">
                                     </label>
 
                                     <label class="checkout-radio-option">
                                         <input type="radio" name="payment_method" value="BANK_QR"
                                             <?php echo (($_POST['payment_method'] ?? '') === 'BANK_QR') ? 'checked' : ''; ?>>
                                         <span>Quét mã QR</span>
+                                        <img src="img/momo.png" alt="Momo logo" class="payment-logo">
                                     </label>
                                 </div>
 

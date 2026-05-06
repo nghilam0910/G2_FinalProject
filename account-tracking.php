@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         SET 
             Status = 'Bị hủy',
             Note = CONCAT(IFNULL(Note, ''), '\nLý do hủy đơn: ', ?)
-        WHERE OrderID = ? AND UserID = ? AND Status = 'Chờ xác nhận'
+        WHERE OrderID = ? AND UserID = ? AND Status = 'Chờ thanh toán'
     ");
     if ($stmt_cancel->execute([$cancel_reason, $order_id_cancel, $user_id])) {
         echo "<script>alert('Đã hủy đơn hàng thành công!'); window.location.href = window.location.href;</script>";
@@ -465,10 +465,10 @@ $payStatus = strtoupper(trim($order['PaymentStatus'] ?? ''));
 
 <?php elseif ($current_status === 'Chờ thanh toán'): ?>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <?php if (in_array($payMethod, ['BANK_QR', 'BANK_ATM']) && $payStatus === 'PENDING'): ?>
-            <?php
-                $requestType = ($payMethod === 'BANK_QR') ? 'captureWallet' : 'payWithATM';
 
+        <?php if ($payStatus === 'PENDING'): ?>
+
+            <?php
                 $amountToPay = 0;
                 if (!empty($order['TotalAmountAfterVoucher']) && $order['TotalAmountAfterVoucher'] > 0) {
                     $amountToPay = $order['TotalAmountAfterVoucher'];
@@ -476,15 +476,74 @@ $payStatus = strtoupper(trim($order['PaymentStatus'] ?? ''));
                     $amountToPay = ($order['TotalAmount'] ?? 0) + ($order['ShippingPrice'] ?? 0);
                 }
             ?>
-            <form action="fh_amt_momo.php" method="post" style="display:inline-block;">
-                <input type="hidden" name="soTien" value="<?php echo (float)$amountToPay; ?>">
-                <input type="hidden" name="orderId" value="<?php echo htmlspecialchars($order['OrderID']); ?>">
-                <input type="hidden" name="orderInfo" value="<?php echo htmlspecialchars('Thanh toán đơn hàng ' . $order['OrderID']); ?>">
-                <input type="hidden" name="requestType" value="<?php echo htmlspecialchars($requestType); ?>">
-                <button type="submit" class="btn-tracking-action btn-green">
-                    <i class="fas fa-credit-card"></i> Thanh toán ngay
-                </button>
-            </form>
+
+            <?php if (in_array($payMethod, ['BANK_QR', 'BANK_ATM', 'BANK_VISA'])): ?>
+
+                <?php
+                    if ($payMethod === 'BANK_QR') {
+                        $requestType = 'captureWallet';
+                    } elseif ($payMethod === 'BANK_ATM') {
+                        $requestType = 'payWithATM';
+                    } else {
+                        $requestType = 'payWithCC';
+                    }
+                ?>
+
+                <form action="fh_amt_momo.php" method="post" style="display:inline-block;">
+                    <input type="hidden" name="soTien" value="<?php echo (float)$amountToPay; ?>">
+                    <input type="hidden" name="orderId" value="<?php echo htmlspecialchars($order['OrderID']); ?>">
+                    <input type="hidden" name="orderInfo" value="<?php echo htmlspecialchars('Thanh toán đơn hàng ' . $order['OrderID']); ?>">
+                    <input type="hidden" name="requestType" value="<?php echo htmlspecialchars($requestType); ?>">
+
+                    <button type="submit" class="btn-tracking-action btn-green">
+                        <i class="fas fa-credit-card"></i> Thanh toán ngay
+                    </button>
+                </form>
+
+            <?php elseif ($payMethod === 'PAYPAL'): ?>
+
+                <?php
+        $businessEmail = 'sb-c8jgx50940429@business.example.com';
+        $paypalUrl = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+
+        $amountUSD = $amountToPay / 24000;
+        $amount = number_format($amountUSD, 2, '.', '');
+
+        $itemName = 'Thanh toán đơn hàng ' . $order['OrderID'];
+
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || ($_SERVER['SERVER_PORT'] ?? '') === '443' ? 'https' : 'http';
+
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+        $baseUrl = $scheme . '://' . $host . $scriptDir;
+
+        $returnUrl = $baseUrl . '/paypal_return.php?orderId=' . urlencode($order['OrderID']);
+        $cancelUrl = $baseUrl . '/paypal_return.php?orderId=' . urlencode($order['OrderID']) . '&cancel=1';
+    ?>
+
+    <form action="<?php echo htmlspecialchars($paypalUrl); ?>" method="post" style="display:inline-block;">
+        <input type="hidden" name="cmd" value="_xclick">
+        <input type="hidden" name="business" value="<?php echo htmlspecialchars($businessEmail); ?>">
+        <input type="hidden" name="item_name" value="<?php echo htmlspecialchars($itemName); ?>">
+        <input type="hidden" name="item_number" value="<?php echo htmlspecialchars($order['OrderID']); ?>">
+        <input type="hidden" name="amount" value="<?php echo htmlspecialchars($amount); ?>">
+        <input type="hidden" name="currency_code" value="USD">
+        <input type="hidden" name="invoice" value="<?php echo htmlspecialchars($order['OrderID']); ?>">
+        <input type="hidden" name="return" value="<?php echo htmlspecialchars($returnUrl); ?>">
+        <input type="hidden" name="cancel_return" value="<?php echo htmlspecialchars($cancelUrl); ?>">
+        <input type="hidden" name="rm" value="2">
+        <input type="hidden" name="charset" value="UTF-8">
+        <input type="hidden" name="no_note" value="1">
+        <input type="hidden" name="no_shipping" value="1">
+
+        <button type="submit" class="btn-tracking-action btn-green">
+            <i class="fas fa-credit-card"></i> Thanh toán PayPal
+        </button>
+    </form>
+
+            <?php endif; ?>
+
         <?php endif; ?>
 
         <button type="button" class="btn-tracking-action btn-red" onclick="openCancelModal('<?php echo $order['OrderID']; ?>')">
