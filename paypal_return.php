@@ -95,7 +95,7 @@ try {
     $updateOrder = $pdo->prepare("
         UPDATE `Order`
         SET PaymentStatus = 'Completed',
-            Status = 'Chờ xác nhận'
+            Status = 'Đã xác nhận'
         WHERE OrderID = :oid
     ");
     $updateOrder->execute([':oid' => $orderId]);

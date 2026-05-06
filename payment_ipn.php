@@ -191,8 +191,8 @@ try {
         // Update order thành đã thanh toán
         $updOrder = $pdo->prepare("
             UPDATE `Order`
-            SET PaymentStatus = 'Paid',
-                Status = 'Chờ xác nhận'
+            SET PaymentStatus = 'Completed',
+                Status = 'Đã xác nhận'
             WHERE OrderID = :oid
         ");
         $updOrder->execute([':oid' => $internalOrderId]);

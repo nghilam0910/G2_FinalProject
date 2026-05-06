@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'db_connect.php';
-
+require_once 'mail_helper.php';
 $resultCode = $_GET['resultCode'] ?? '';
 $message    = $_GET['message'] ?? '';
 $extraData  = $_GET['extraData'] ?? '';
@@ -25,11 +25,12 @@ try {
     $stmt = $pdo->prepare("
         UPDATE `Order`
         SET PaymentStatus = 'Completed',
-            Status = 'Chờ xác nhận'
+            Status = 'Đã xác nhận'
         WHERE OrderID = :oid
     ");
+    
     $stmt->execute([':oid' => $internalOrderId]);
-
+    sendOrderSuccessMail($pdo, $orderId);
     header(
         'Location: account-index.php?section=tracking'
         . '&payment=success'
