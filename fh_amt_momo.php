@@ -54,8 +54,8 @@ $extraDataArr = [
 ];
 $extraData = base64_encode(json_encode($extraDataArr));
 
-$redirectUrl = "http://localhost/web/payment_return.php";
-$ipnUrl      = "http://localhost/web/payment_ipn.php";
+$redirectUrl = "http://localhost/G2_FinalProject/payment_return.php";
+$ipnUrl      = "http://localhost/G2_FinalProject/payment_ipn.php";
 $requestType = !empty($_POST["requestType"]) ? trim($_POST["requestType"]) : 'captureWallet';
 $allowRequestTypes = ['captureWallet', 'payWithATM', 'payWithCC'];
 if (!in_array($requestType, $allowRequestTypes, true)) {

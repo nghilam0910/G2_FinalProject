@@ -10,14 +10,14 @@ $internalOrderId = '';
 
 if ($extraData !== '') {
     $decoded = json_decode(base64_decode($extraData), true);
+
     if (is_array($decoded) && !empty($decoded['internalOrderId'])) {
         $internalOrderId = $decoded['internalOrderId'];
     }
 }
 
-if ($internalOrderId === '') {
-    header('Location: account-index.php?section=tracking&payment=error&msg=' . urlencode('Không xác định được đơn hàng.'));
-    exit;
+if ($internalOrderId === '' && !empty($_GET['orderId'])) {
+    $internalOrderId = $_GET['orderId'];
 }
 
 try {
@@ -30,7 +30,7 @@ try {
     ");
     
     $stmt->execute([':oid' => $internalOrderId]);
-    sendOrderSuccessMail($pdo, $orderId);
+    sendOrderSuccessMail($pdo, $internalOrderId);
     header(
         'Location: account-index.php?section=tracking'
         . '&payment=success'
