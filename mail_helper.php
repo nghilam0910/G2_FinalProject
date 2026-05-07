@@ -82,7 +82,7 @@ function sendOrderSuccessMail(PDO $pdo, string $orderId): bool
         <div style="font-family:Arial,sans-serif;font-size:14px;color:#333;">
             <h2 style="color:#1E4A8C;">Moonlit Store xác nhận đơn hàng</h2>
 
-            <p>Xin chào <strong>' . htmlspecialchars($order['FullName']) . '</strong>,</p>
+            <p><strong>' . htmlspecialchars($order['FullName']) . '</strong>,</p>
 
             <p>Đơn hàng của bạn đã được ghi nhận thành công.</p>
 

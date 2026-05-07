@@ -206,7 +206,9 @@ if (!function_exists('nav_active')) {
 
       <!-- COL 1 -->
       <div class="footer-col">
-        <h4>Moonlit</h4>
+        <a href="index.php" class="footer-logo-link">
+            <img src="img/image.png?v=2" alt="Moonlit logo" class="footer-logo-img">
+        </a>
         <p class="footer-desc">
           Hiệu sách trực tuyến dành cho những tâm hồn yêu đọc.
           Chúng tôi tin mỗi cuốn sách đều có ánh trăng riêng 🌙

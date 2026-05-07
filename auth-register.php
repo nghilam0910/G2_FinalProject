@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <span class="account-username">
-                            Xin chào, <strong><?php echo htmlspecialchars($currentUsername); ?></strong>
+                           <strong><?php echo htmlspecialchars($currentUsername); ?></strong>
                         </span>
                     </div>
                 <?php else: ?>

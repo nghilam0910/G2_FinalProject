@@ -64,7 +64,7 @@ ob_end_flush();
 
                 <div class="header-right">
                     <span class="account-username d-none d-sm-inline">
-                        Xin chào, <strong><?php echo h($currentUsername); ?></strong>
+                        <strong><?php echo h($currentUsername); ?></strong>
                     </span>
                     <a href="index.php" class="account-btn-secondary header-account-btn">
                         Xem cửa hàng
