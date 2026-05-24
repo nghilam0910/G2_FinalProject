@@ -990,48 +990,67 @@ $prefill_name  = $_POST['full_name'] ?? ($userProfile['FullName'] ?? $currentUse
 </main>
 
 <footer class="site-footer">
-    <div class="container footer-grid">
-        <div class="footer-col">
-            <a href="index.php" class="footer-logo-link">
-                <img src="img/image.png?v=2" alt="Moonlit logo" class="footer-logo-img">
-            </a>
-            <p class="footer-desc">
-                Hiệu sách trực tuyến dành cho những tâm hồn yêu đọc.
-                Chúng tôi tin mỗi cuốn sách đều có ánh trăng riêng 🌙
-            </p>
-        </div>
-        <div class="footer-col">
-            <h4>Liên kết</h4>
-            <ul>
-                <li><a href="index.php">Trang chủ</a></li>
-                <li><a href="shop.php">Cửa hàng</a></li>
-                <li><a href="forum.php">Moonlit Forum</a></li>
-                <li><a href="aboutus.php">Về chúng tôi</a></li>
-            </ul>
-        </div>
-        <div class="footer-col">
-            <h4>Blog & Nội dung</h4>
-            <ul>
-                <li><a href="blogs.php">Blog Moonlit</a></li>
-                <li><a href="blogs.php">Review sách</a></li>
-                <li><a href="blogs.php">Góc đọc chậm</a></li>
-            </ul>
-        </div>
-        <div class="footer-col">
-            <h4>Chính sách</h4>
-            <ul>
-                <li><a href="policy.php">Chính sách mua hàng</a></li>
-                <li><a href="policy.php">Bảo mật thông tin</a></li>
-                <li><a href="policy.php">Điều khoản sử dụng</a></li>
-                <li><a href="contact_us.php">Liên hệ</a></li>
-            </ul>
-        </div>
-    </div>
+        <div class="container footer-grid">
 
-    <div class="footer-bottom">
-        © 2025 Moonlit — All rights reserved.
-    </div>
-</footer>
+            <!-- COL 1 -->
+            <div class="footer-col">
+                <a href="index.php" class="footer-logo-link">
+                    <img src="img/image.png?v=2" alt="Moonlit logo" class="footer-logo-img">
+                </a>
+
+                <p class="footer-desc">
+                    Hiệu sách trực tuyến dành cho những tâm hồn yêu đọc.
+                    Chúng tôi tin mỗi cuốn sách đều có ánh trăng riêng 🌙
+                </p>
+
+                <div class="footer-payment">
+                    <p class="footer-payment-title">Hỗ trợ thanh toán</p>
+
+                    <div class="footer-payment-logos">
+                        <img src="img/momo.png" alt="MoMo" class="footer-payment-logo">
+                        <img src="img/paypal.png" alt="PayPal" class="footer-payment-logo">
+                    </div>
+                </div>
+            </div>
+
+            <!-- COL 2 -->
+            <div class="footer-col">
+                <h4>Liên kết</h4>
+                <ul>
+                    <li><a href="index.php">Trang chủ</a></li>
+                    <li><a href="shop.php">Cửa hàng</a></li>
+                    <li><a href="forum.php">Moonlit Forum</a></li>
+                    <li><a href="aboutus.php">Về chúng tôi</a></li>
+                </ul>
+            </div>
+
+            <!-- COL 3 -->
+            <div class="footer-col">
+                <h4>Blog & Nội dung</h4>
+                <ul>
+                    <li><a href="blogs.php">Blog Moonlit</a></li>
+                    <li><a href="blogs.php">Review sách</a></li>
+                    <li><a href="blogs.php">Góc đọc chậm</a></li>
+                </ul>
+            </div>
+
+            <!-- COL 4 -->
+            <div class="footer-col">
+                <h4>Chính sách</h4>
+                <ul>
+                    <li><a href="policy.php">Chính sách mua hàng</a></li>
+                    <li><a href="policy.php">Bảo mật thông tin</a></li>
+                    <li><a href="policy.php">Điều khoản sử dụng</a></li>
+                    <li><a href="contact_us.php">Liên hệ</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            © 2026 Moonlit — All rights reserved.
+        </div>
+    </footer>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

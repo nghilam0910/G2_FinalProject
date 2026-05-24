@@ -437,10 +437,20 @@ WHERE 1=1
                 <a href="index.php" class="footer-logo-link">
                     <img src="img/image.png?v=2" alt="Moonlit logo" class="footer-logo-img">
                 </a>
+
                 <p class="footer-desc">
                     Hiệu sách trực tuyến dành cho những tâm hồn yêu đọc.
                     Chúng tôi tin mỗi cuốn sách đều có ánh trăng riêng 🌙
                 </p>
+
+                <div class="footer-payment">
+                    <p class="footer-payment-title">Hỗ trợ thanh toán</p>
+
+                    <div class="footer-payment-logos">
+                        <img src="img/momo.png" alt="MoMo" class="footer-payment-logo">
+                        <img src="img/paypal.png" alt="PayPal" class="footer-payment-logo">
+                    </div>
+                </div>
             </div>
 
             <!-- COL 2 -->
@@ -478,7 +488,7 @@ WHERE 1=1
         </div>
 
         <div class="footer-bottom">
-            © 2025 Moonlit — All rights reserved.
+            © 2026 Moonlit — All rights reserved.
         </div>
     </footer>
 

@@ -54,7 +54,7 @@ if (!function_exists('nav_active')) {
           <a href="aboutus.php" class="header-menu-link <?php echo nav_active('aboutus.php', $currentPage); ?>">
             Về chúng tôi
           </a>
-         
+
         </nav>
       </div>
 
@@ -207,12 +207,22 @@ if (!function_exists('nav_active')) {
       <!-- COL 1 -->
       <div class="footer-col">
         <a href="index.php" class="footer-logo-link">
-            <img src="img/image.png?v=2" alt="Moonlit logo" class="footer-logo-img">
+          <img src="img/image.png?v=2" alt="Moonlit logo" class="footer-logo-img">
         </a>
+
         <p class="footer-desc">
           Hiệu sách trực tuyến dành cho những tâm hồn yêu đọc.
           Chúng tôi tin mỗi cuốn sách đều có ánh trăng riêng 🌙
         </p>
+
+        <div class="footer-payment">
+          <p class="footer-payment-title">Hỗ trợ thanh toán</p>
+
+          <div class="footer-payment-logos">
+            <img src="img/momo.png" alt="MoMo" class="footer-payment-logo">
+            <img src="img/paypal.png" alt="PayPal" class="footer-payment-logo">
+          </div>
+        </div>
       </div>
 
       <!-- COL 2 -->
@@ -250,7 +260,7 @@ if (!function_exists('nav_active')) {
     </div>
 
     <div class="footer-bottom">
-      © 2025 Moonlit — All rights reserved.
+      © 2026 Moonlit — All rights reserved.
     </div>
   </footer>
 

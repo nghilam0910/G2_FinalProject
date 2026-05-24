@@ -8,7 +8,8 @@ $currentUsername = $_SESSION['username'] ?? '';
 $currentPage = basename($_SERVER['PHP_SELF']);
 
 if (!function_exists('calculateUserRankForHome')) {
-    function calculateUserRankForHome($pdo, $user_id) {
+    function calculateUserRankForHome($pdo, $user_id)
+    {
         $stmt = $pdo->prepare("
             SELECT (SUM(o.TotalAmount) - COALESCE(SUM(ro.TotalRefund), 0)) as total_spent
             FROM `Order` o
@@ -18,15 +19,20 @@ if (!function_exists('calculateUserRankForHome')) {
         $stmt->execute([$user_id]);
         $total_spent = $stmt->fetch()['total_spent'] ?? 0;
 
-            // Tính rank
-            if ($total_spent < 100000) $rank = 'Member';
-            elseif ($total_spent < 200000) $rank = 'Bronze';
-            elseif ($total_spent < 300000) $rank = 'Silver';
-            elseif ($total_spent < 400000) $rank = 'Gold';
-            else $rank = 'Platinum';
+        // Tính rank
+        if ($total_spent < 100000)
+            $rank = 'Member';
+        elseif ($total_spent < 200000)
+            $rank = 'Bronze';
+        elseif ($total_spent < 300000)
+            $rank = 'Silver';
+        elseif ($total_spent < 400000)
+            $rank = 'Gold';
+        else
+            $rank = 'Platinum';
 
-            // Trả về cả hai (Mảng)
-            return ['rank' => $rank, 'money' => $total_spent];
+        // Trả về cả hai (Mảng)
+        return ['rank' => $rank, 'money' => $total_spent];
     }
 }
 
@@ -35,17 +41,17 @@ $has_new_voucher = false; // Biến cờ để hiển thị thông báo
 
 
 // Lấy role từ session, nếu chưa có thì để rỗng
-$userRole = $_SESSION['role'] ?? ''; 
+$userRole = $_SESSION['role'] ?? '';
 
 // THÊM ĐIỀU KIỆN: && $userRole === 'Customer'
 // Chỉ chạy logic voucher nếu đã đăng nhập VÀ là Khách hàng
-if (isset($_SESSION['user_id']) && $userRole === 'Customer') { 
+if (isset($_SESSION['user_id']) && $userRole === 'Customer') {
     $user_id_home = $_SESSION['user_id'];
-   
+
     // 2. Tính Rank hiện tại
     $result = calculateUserRankForHome($pdo, $user_id_home);
     $current_tier = $result['rank']; // Lấy chữ Platinum
-    $total_spent  = $result['money']; // Lấy số tiền ra biến global để dùng
+    $total_spent = $result['money']; // Lấy số tiền ra biến global để dùng
 
 
     // 3. Kiểm tra xem có voucher nào (Rank hiện tại HOẶC Free) mà user CHƯA CÓ trong User_Voucher không
@@ -61,15 +67,15 @@ if (isset($_SESSION['user_id']) && $userRole === 'Customer') {
             SELECT uv.VoucherID FROM User_Voucher uv WHERE uv.UserID = ?
         )
     ");
-   
+
     $stmtCheck->execute([$current_tier, $user_id_home]);
     $count_new = $stmtCheck->fetchColumn();
-    
+
     // Check xem có voucher Platinum nào thỏa mãn không (Bỏ qua điều kiện User_Voucher để test)
     $stmtTest = $pdo->prepare("SELECT * FROM Voucher WHERE RankRequirement = ?");
     $stmtTest->execute([$current_tier]);
     $vouchers = $stmtTest->fetchAll();
-    
+
     if ($count_new > 0) {
         $has_new_voucher = true;
     }
@@ -274,7 +280,7 @@ try {
                         class="header-menu-link <?php echo nav_active('aboutus.php', $currentPage); ?>">
                         Về chúng tôi
                     </a>
-                    
+
                 </nav>
             </div>
 
@@ -294,7 +300,7 @@ try {
                         </div>
 
                         <span class="account-username">
-                        <strong><?php echo htmlspecialchars($currentUsername); ?></strong>
+                            <strong><?php echo htmlspecialchars($currentUsername); ?></strong>
                         </span>
                     </div>
                 <?php else: ?>
@@ -308,14 +314,15 @@ try {
     <main class="home-main">
         <?php if ($has_new_voucher): ?>
             <div class="position-fixed bottom-0 end-0 p-4" style="z-index: 1100">
-                <div id="voucherToast" class="toast voucher-toast-custom text-white align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+                <div id="voucherToast" class="toast voucher-toast-custom text-white align-items-center" role="alert"
+                    aria-live="assertive" aria-atomic="true">
                     <div class="d-flex p-2 align-items-center">
                         <div class="p-2">
                             <div class="voucher-icon-box">
                                 🎁
                             </div>
                         </div>
-                       
+
                         <div class="toast-body ps-1">
                             <h6 class="mb-0 fw-bold">Quà tặng mới!</h6>
                             <small class="text-white-50">Bạn nhận được <?php echo $count_new; ?> voucher.</small> <br>
@@ -328,8 +335,9 @@ try {
                                 Nhận
                             </a>
                         </div>
-                       
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                            aria-label="Close"></button>
                     </div>
                 </div>
             </div>
@@ -433,73 +441,76 @@ try {
             </section>
         <?php endif; ?>
         <!-- ===== BOOK OF THE MONTH ===== -->
-            <section class="home-section home-section-featured">
-                <div class="container">
-                    <div class="home-section-header">
-                        <h2 class="home-section-title">📚 Book of the Month</h2>
-                    </div>
+        <section class="home-section home-section-featured">
+            <div class="container">
+                <div class="home-section-header">
+                    <h2 class="home-section-title">📚 Book of the Month</h2>
+                </div>
 
-                    <?php if (!empty($bookOfTheMonth)): ?>
-                        <div class="home-grid-4"> 
-                            
-                            <?php foreach ($bookOfTheMonth as $book): ?> <article class="product-card">
+                <?php if (!empty($bookOfTheMonth)): ?>
+                    <div class="home-grid-4 book-month-grid">
 
-                                    <a href="product-detail.php?id=<?php echo $book['ProductID']; ?>" class="product-card-link">
+                        <?php foreach ($bookOfTheMonth as $book): ?>
+                            <article class="product-card">
 
-                                        <div class="product-card-image">
-                                            <?php
-                                                $imgSrc = '';
-                                                if (!empty($book['ImageUrl'])) {
-                                                    $imgSrc = $book['ImageUrl'];
-                                                } elseif (!empty($book['HasImage'])) {
-                                                    $imgSrc = "product-image.php?id=" . urlencode($book['ProductID']);
-                                                }
-                                            ?>
+                                <a href="product-detail.php?id=<?php echo $book['ProductID']; ?>" class="product-card-link">
 
-                                            <?php if ($imgSrc !== ''): ?>
-                                                <img src="<?php echo htmlspecialchars($imgSrc); ?>" alt="<?php echo htmlspecialchars($book['ProductName']); ?>">
+                                    <div class="product-card-image">
+                                        <?php
+                                        $imgSrc = '';
+                                        if (!empty($book['ImageUrl'])) {
+                                            $imgSrc = $book['ImageUrl'];
+                                        } elseif (!empty($book['HasImage'])) {
+                                            $imgSrc = "product-image.php?id=" . urlencode($book['ProductID']);
+                                        }
+                                        ?>
+
+                                        <?php if ($imgSrc !== ''): ?>
+                                            <img src="<?php echo htmlspecialchars($imgSrc); ?>"
+                                                alt="<?php echo htmlspecialchars($book['ProductName']); ?>">
+                                        <?php else: ?>
+                                            <div class="product-image-placeholder">Moonlit</div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="product-card-body">
+                                        <h3 class="product-title">
+                                            <?php echo htmlspecialchars($book['ProductName']); ?>
+                                        </h3>
+
+                                        <p class="product-desc">
+                                            <?php echo htmlspecialchars(mb_strimwidth($book['Description'] ?? '', 0, 80, '...')); ?>
+                                        </p>
+
+                                        <div class="product-price-row">
+                                            <?php if ($book['HasSale']): ?>
+                                                <span class="product-price text-danger">
+                                                    <?php echo format_price($book['MinDisplayPrice']); ?>
+                                                </span>
+                                                <span class="product-old-price">
+                                                    <?php echo format_price($book['MaxOriginalPrice']); ?>
+                                                </span>
                                             <?php else: ?>
-                                                <div class="product-image-placeholder">Moonlit</div>
+                                                <span class="product-price">
+                                                    <?php echo format_price($book['MinDisplayPrice']); ?>
+                                                </span>
                                             <?php endif; ?>
                                         </div>
 
-                                        <div class="product-card-body">
-                                            <h3 class="product-title">
-                                                <?php echo htmlspecialchars($book['ProductName']); ?>
-                                            </h3>
+                                        <p class="featured-sold">
+                                            🔥 Đã bán: <?php echo (int) $book['TotalSold']; ?> cuốn
+                                        </p>
+                                    </div>
+                                </a>
 
-                                            <p class="product-desc">
-                                                <?php echo htmlspecialchars(mb_strimwidth($book['Description'] ?? '', 0, 80, '...')); ?>
-                                            </p>
-
-                                            <div class="product-price-row">
-                                                <?php if ($book['HasSale']): ?>
-                                                    <span class="product-price text-danger">
-                                                        <?php echo format_price($book['MinDisplayPrice']); ?>
-                                                    </span>
-                                                    <span class="product-old-price">
-                                                        <?php echo format_price($book['MaxOriginalPrice']); ?>
-                                                    </span>
-                                                <?php else: ?>
-                                                    <span class="product-price">
-                                                        <?php echo format_price($book['MinDisplayPrice']); ?>
-                                                    </span>
-                                                <?php endif; ?>
-                                            </div>
-
-                                            <p class="featured-sold">
-                                                🔥 Đã bán: <?php echo (int) $book['TotalSold']; ?> cuốn
-                                            </p>
-                                        </div>
-                                    </a>
-
-                                </article>
-                            <?php endforeach; ?> </div>
-                    <?php else: ?>
-                        <p class="home-empty-text">Hiện chưa có sản phẩm nổi bật.</p>
-                    <?php endif; ?>
-                </div>
-            </section>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <p class="home-empty-text">Hiện chưa có sản phẩm nổi bật.</p>
+                <?php endif; ?>
+            </div>
+        </section>
         <!-- ===== SÁCH MỚI NHẤT ===== -->
         <section class="home-section">
             <div class="container">
@@ -515,12 +526,12 @@ try {
                                 <a href="product-detail.php?id=<?php echo $p['ProductID']; ?>" class="product-card-link">
                                     <div class="product-card-image">
                                         <?php
-                                            $imgSrc = '';
-                                            if (!empty($p['ImageUrl'])) {
-                                                $imgSrc = $p['ImageUrl'];
-                                            } elseif (!empty($p['HasImage'])) {
-                                                $imgSrc = "product-image.php?id=" . urlencode($p['ProductID']);
-                                            }
+                                        $imgSrc = '';
+                                        if (!empty($p['ImageUrl'])) {
+                                            $imgSrc = $p['ImageUrl'];
+                                        } elseif (!empty($p['HasImage'])) {
+                                            $imgSrc = "product-image.php?id=" . urlencode($p['ProductID']);
+                                        }
                                         ?>
 
                                         <?php if ($imgSrc !== ''): ?>
@@ -655,10 +666,20 @@ try {
                 <a href="index.php" class="footer-logo-link">
                     <img src="img/image.png?v=2" alt="Moonlit logo" class="footer-logo-img">
                 </a>
+
                 <p class="footer-desc">
                     Hiệu sách trực tuyến dành cho những tâm hồn yêu đọc.
                     Chúng tôi tin mỗi cuốn sách đều có ánh trăng riêng 🌙
                 </p>
+
+                <div class="footer-payment">
+                    <p class="footer-payment-title">Hỗ trợ thanh toán</p>
+
+                    <div class="footer-payment-logos">
+                        <img src="img/momo.png" alt="MoMo" class="footer-payment-logo">
+                        <img src="img/paypal.png" alt="PayPal" class="footer-payment-logo">
+                    </div>
+                </div>
             </div>
 
             <!-- COL 2 -->
@@ -696,7 +717,7 @@ try {
         </div>
 
         <div class="footer-bottom">
-            © 2025 Moonlit — All rights reserved.
+            © 2026 Moonlit — All rights reserved.
         </div>
     </footer>
 
@@ -704,6 +725,3 @@ try {
 </body>
 
 </html>
-
-
-

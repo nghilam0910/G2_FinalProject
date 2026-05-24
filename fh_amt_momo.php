@@ -25,14 +25,14 @@ function execPostRequest($url, $data)
 $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
 
 $partnerCode = 'MOMO4MUD20240115_TEST';
-$accessKey   = 'Ekj9og2VnRfOuIys';
-$secretKey   = 'PseUbm2s8QVJEbexsh8H3Jz2qa9tDqoa';
+$accessKey = 'Ekj9og2VnRfOuIys';
+$secretKey = 'PseUbm2s8QVJEbexsh8H3Jz2qa9tDqoa';
 
 if (!isset($_POST["soTien"]) || $_POST["soTien"] === "") {
     die("Thiếu số tiền thanh toán");
 }
 
-$amount = (string)(int)$_POST["soTien"];
+$amount = (string) (int) $_POST["soTien"];
 $internalOrderId = !empty($_POST["orderId"]) ? trim($_POST["orderId"]) : time() . "";
 $orderInfo = !empty($_POST["orderInfo"]) ? trim($_POST["orderInfo"]) : "Thanh toán qua MoMo";
 
@@ -42,7 +42,7 @@ $orderInfo = !empty($_POST["orderInfo"]) ? trim($_POST["orderInfo"]) : "Thanh to
 |--------------------------------------------------------------------------
 */
 $momoOrderId = $internalOrderId . "_" . time();
-$requestId   = $momoOrderId;
+$requestId = $momoOrderId;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,8 +54,14 @@ $extraDataArr = [
 ];
 $extraData = base64_encode(json_encode($extraDataArr));
 
-$redirectUrl = "http://localhost/G2_FinalProject/payment_return.php";
-$ipnUrl      = "http://localhost/G2_FinalProject/payment_ipn.php";
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+$host = $_SERVER['HTTP_HOST'];
+$folder = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+
+$baseUrl = $scheme . "://" . $host . $folder;
+
+$redirectUrl = $baseUrl . "/payment_return.php";
+$ipnUrl = $baseUrl . "/payment_ipn.php";
 $requestType = !empty($_POST["requestType"]) ? trim($_POST["requestType"]) : 'captureWallet';
 $allowRequestTypes = ['captureWallet', 'payWithATM', 'payWithCC'];
 if (!in_array($requestType, $allowRequestTypes, true)) {
@@ -64,15 +70,15 @@ if (!in_array($requestType, $allowRequestTypes, true)) {
 
 
 $rawHash = "accessKey=" . $accessKey .
-           "&amount=" . $amount .
-           "&extraData=" . $extraData .
-           "&ipnUrl=" . $ipnUrl .
-           "&orderId=" . $momoOrderId .
-           "&orderInfo=" . $orderInfo .
-           "&partnerCode=" . $partnerCode .
-           "&redirectUrl=" . $redirectUrl .
-           "&requestId=" . $requestId .
-           "&requestType=" . $requestType;
+    "&amount=" . $amount .
+    "&extraData=" . $extraData .
+    "&ipnUrl=" . $ipnUrl .
+    "&orderId=" . $momoOrderId .
+    "&orderInfo=" . $orderInfo .
+    "&partnerCode=" . $partnerCode .
+    "&redirectUrl=" . $redirectUrl .
+    "&requestId=" . $requestId .
+    "&requestType=" . $requestType;
 
 $signature = hash_hmac("sha256", $rawHash, $secretKey);
 

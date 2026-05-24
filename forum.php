@@ -257,7 +257,7 @@ $topics = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="moonlit-style.css">
-    
+
     <style>
         /* =====================
    FORUM GENERAL (style được bổ sung thêm)
@@ -437,7 +437,7 @@ $topics = $stmt->fetchAll();
                         class="header-menu-link <?php echo nav_active('aboutus.php', $currentPage); ?>">
                         Về chúng tôi
                     </a>
-                    
+
                 </nav>
             </div>
 
@@ -457,7 +457,7 @@ $topics = $stmt->fetchAll();
                         </div>
 
                         <span class="account-username">
-                          <strong><?php echo htmlspecialchars($currentUsername); ?></strong>
+                            <strong><?php echo htmlspecialchars($currentUsername); ?></strong>
                         </span>
                     </div>
                 <?php else: ?>
@@ -667,10 +667,20 @@ $topics = $stmt->fetchAll();
                 <a href="index.php" class="footer-logo-link">
                     <img src="img/image.png?v=2" alt="Moonlit logo" class="footer-logo-img">
                 </a>
+
                 <p class="footer-desc">
                     Hiệu sách trực tuyến dành cho những tâm hồn yêu đọc.
                     Chúng tôi tin mỗi cuốn sách đều có ánh trăng riêng 🌙
                 </p>
+
+                <div class="footer-payment">
+                    <p class="footer-payment-title">Hỗ trợ thanh toán</p>
+
+                    <div class="footer-payment-logos">
+                        <img src="img/momo.png" alt="MoMo" class="footer-payment-logo">
+                        <img src="img/paypal.png" alt="PayPal" class="footer-payment-logo">
+                    </div>
+                </div>
             </div>
 
             <!-- COL 2 -->
@@ -708,7 +718,7 @@ $topics = $stmt->fetchAll();
         </div>
 
         <div class="footer-bottom">
-            © 2025 Moonlit — All rights reserved.
+            © 2026 Moonlit — All rights reserved.
         </div>
     </footer>
 

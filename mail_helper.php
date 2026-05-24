@@ -57,18 +57,26 @@ function sendOrderSuccessMail(PDO $pdo, string $orderId): bool
     $itemsHtml = '';
     foreach ($items as $item) {
         $itemsHtml .= '
-            <tr>
-                <td style="padding:8px;border-bottom:1px solid #eee;">' . htmlspecialchars($item['ProductName']) . '</td>
-                <td style="padding:8px;border-bottom:1px solid #eee;">' . htmlspecialchars($item['Format'] ?? '') . '</td>
-                <td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">' . (int)$item['Quantity'] . '</td>
-                <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">' . number_format((float)$item['TotalPrice'], 0, ',', '.') . ' đ</td>
-            </tr>
-        ';
+        <tr style="background:#ffffff;">
+            <td style="padding:13px 12px;border-bottom:1px solid #EFE4C8;line-height:1.5;">
+                <strong>' . htmlspecialchars($item['ProductName']) . '</strong>
+            </td>
+            <td style="padding:13px 12px;border-bottom:1px solid #EFE4C8;color:#555;">
+                ' . htmlspecialchars($item['Format'] ?? '') . '
+            </td>
+            <td style="padding:13px 12px;border-bottom:1px solid #EFE4C8;text-align:center;">
+                ' . (int) $item['Quantity'] . '
+            </td>
+            <td style="padding:13px 12px;border-bottom:1px solid #EFE4C8;text-align:right;font-weight:bold;color:#1E4F95;">
+                ' . number_format((float) $item['TotalPrice'], 0, ',', '.') . ' đ
+            </td>
+        </tr>
+    ';
     }
 
     $total = !empty($order['TotalAmountAfterVoucher'])
-        ? (float)$order['TotalAmountAfterVoucher']
-        : (float)$order['TotalAmount'];
+        ? (float) $order['TotalAmountAfterVoucher']
+        : (float) $order['TotalAmount'];
 
     $address = trim(
         ($order['ShippingNumber'] ?? '') . ', ' .
@@ -79,28 +87,68 @@ function sendOrderSuccessMail(PDO $pdo, string $orderId): bool
     );
 
     $body = '
-        <div style="font-family:Arial,sans-serif;font-size:14px;color:#333;">
-            <h2 style="color:#1E4A8C;">Moonlit Store xác nhận đơn hàng</h2>
+<div style="margin:0;padding:0;background:#F4EEDC;font-family:Arial,Helvetica,sans-serif;color:#2f2f2f;">
+    <div style="max-width:760px;margin:0 auto;padding:28px 16px;">
 
-            <p>Xin chào <strong>' . htmlspecialchars($order['FullName']) . '</strong>,</p>
+        <div style="background:#1E4F95;border-radius:18px 18px 0 0;padding:24px 28px;text-align:center;">
+            <div style="font-size:30px;font-weight:800;letter-spacing:3px;color:#F7D94C;">
+                MOONLIT
+            </div>
+            <div style="font-size:14px;color:#ffffff;margin-top:6px;">
+                Cảm ơn bạn đã đặt sách tại Moonlit Store 🌙
+            </div>
+        </div>
 
-            <p>Đơn hàng của bạn đã được ghi nhận thành công.</p>
+        <div style="background:#ffffff;border-radius:0 0 18px 18px;padding:30px 32px;border:1px solid #E8D8A8;border-top:none;">
 
-            <p>
-                <strong>Mã đơn:</strong> ' . htmlspecialchars($order['OrderID']) . '<br>
-                <strong>Ngày đặt:</strong> ' . htmlspecialchars($order['CreatedDate']) . '<br>
-                <strong>Phương thức thanh toán:</strong> ' . htmlspecialchars($order['PaymentMethod']) . '<br>
-                <strong>Trạng thái thanh toán:</strong> ' . htmlspecialchars($order['PaymentStatus']) . '<br>
-                <strong>Địa chỉ nhận hàng:</strong> ' . htmlspecialchars($address) . '
+            <h2 style="margin:0 0 14px 0;color:#1E4F95;font-size:24px;">
+                Xác nhận đơn hàng thành công
+            </h2>
+
+            <p style="font-size:15px;line-height:1.7;margin:0 0 16px 0;">
+                Xin chào <strong>' . htmlspecialchars($order['FullName']) . '</strong>,
             </p>
 
-            <table style="width:100%;border-collapse:collapse;margin-top:15px;">
+            <p style="font-size:15px;line-height:1.7;margin:0 0 22px 0;">
+                Moonlit Store đã ghi nhận đơn hàng của bạn. Dưới đây là thông tin chi tiết đơn hàng.
+            </p>
+
+            <div style="background:#F8F3E7;border:1px solid #E9D8A6;border-radius:14px;padding:18px 20px;margin-bottom:24px;">
+                <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                    <tr>
+                        <td style="padding:6px 0;color:#666;width:190px;">Mã đơn hàng</td>
+                        <td style="padding:6px 0;font-weight:bold;color:#1E4F95;">#' . htmlspecialchars($order['OrderID']) . '</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0;color:#666;">Ngày đặt</td>
+                        <td style="padding:6px 0;">' . htmlspecialchars($order['CreatedDate']) . '</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0;color:#666;">Phương thức thanh toán</td>
+                        <td style="padding:6px 0;">' . htmlspecialchars($order['PaymentMethod']) . '</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0;color:#666;">Trạng thái thanh toán</td>
+                        <td style="padding:6px 0;font-weight:bold;color:#D99A00;">' . htmlspecialchars($order['PaymentStatus']) . '</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0;color:#666;vertical-align:top;">Địa chỉ nhận hàng</td>
+                        <td style="padding:6px 0;line-height:1.5;">' . htmlspecialchars($address) . '</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3 style="margin:0 0 12px 0;color:#1E4F95;font-size:18px;">
+                Sản phẩm đã đặt
+            </h3>
+
+            <table style="width:100%;border-collapse:collapse;font-size:14px;border:1px solid #E9D8A6;border-radius:12px;overflow:hidden;">
                 <thead>
-                    <tr style="background:#F3E9D7;">
-                        <th style="padding:8px;text-align:left;">Sản phẩm</th>
-                        <th style="padding:8px;text-align:left;">Định dạng</th>
-                        <th style="padding:8px;text-align:center;">SL</th>
-                        <th style="padding:8px;text-align:right;">Thành tiền</th>
+                    <tr style="background:#1E4F95;color:#ffffff;">
+                        <th style="padding:12px;text-align:left;">Sản phẩm</th>
+                        <th style="padding:12px;text-align:left;">Định dạng</th>
+                        <th style="padding:12px;text-align:center;">SL</th>
+                        <th style="padding:12px;text-align:right;">Thành tiền</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -108,29 +156,49 @@ function sendOrderSuccessMail(PDO $pdo, string $orderId): bool
                 </tbody>
             </table>
 
-            <h3 style="text-align:right;color:#1E4A8C;">
-                Tổng thanh toán: ' . number_format($total, 0, ',', '.') . ' đ
-            </h3>
+            <div style="text-align:right;margin-top:22px;">
+                <div style="display:inline-block;background:#F8F3E7;border:1px solid #E9D8A6;border-radius:14px;padding:16px 22px;">
+                    <div style="font-size:13px;color:#666;margin-bottom:4px;">Tổng thanh toán</div>
+                    <div style="font-size:24px;font-weight:800;color:#1E4F95;">
+                        ' . number_format($total, 0, ',', '.') . ' đ
+                    </div>
+                </div>
+            </div>
 
-            <p>Cảm ơn bạn đã mua sách tại Moonlit Store 🌙</p>
+            <div style="margin-top:28px;padding:18px 20px;background:#F8F3E7;border-radius:14px;text-align:center;">
+                <p style="margin:0;font-size:15px;line-height:1.6;">
+                    Moonlit sẽ sớm xử lý đơn hàng và giao sách đến bạn trong thời gian gần nhất.
+                </p>
+                <p style="margin:8px 0 0 0;color:#1E4F95;font-weight:bold;">
+                    Chúc bạn có những phút giây đọc sách thật dễ chịu 🌙
+                </p>
+            </div>
+
         </div>
-    ';
+
+        <div style="text-align:center;font-size:12px;color:#777;margin-top:16px;">
+            Email này được gửi tự động từ Moonlit Store. Vui lòng không trả lời email này.
+        </div>
+
+    </div>
+</div>
+';
 
     $mail = new PHPMailer(true);
 
     try {
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
 
         // Đổi thành email gửi của bạn
-        $mail->Username   = 'namrombentre@gmail.com';
+        $mail->Username = 'namrombentre@gmail.com';
 
         // Dùng App Password, không dùng mật khẩu Gmail thường
-        $mail->Password   = 'fzkc ppgm ftbd prcy';
+        $mail->Password = 'fzkc ppgm ftbd prcy';
 
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+        $mail->Port = 587;
 
         $mail->CharSet = 'UTF-8';
 
@@ -139,7 +207,7 @@ function sendOrderSuccessMail(PDO $pdo, string $orderId): bool
 
         $mail->isHTML(true);
         $mail->Subject = 'Xác nhận đơn hàng #' . $order['OrderID'];
-        $mail->Body    = $body;
+        $mail->Body = $body;
 
         $mail->send();
         return true;

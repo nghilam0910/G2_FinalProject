@@ -77,11 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['qty'])) {
         $price = $priceStmt->fetch(PDO::FETCH_ASSOC);
 
         if ($price) {
-                $unit  = (float)$price['UnitPrice'];
-                $final = (float)$price['FinalPrice'];
-                $total = $qty * $final;
+            $unit = (float) $price['UnitPrice'];
+            $final = (float) $price['FinalPrice'];
+            $total = $qty * $final;
 
-                $pdo->prepare("
+            $pdo->prepare("
                     UPDATE Cart_Items
                     SET Quantity = :q,
                         UnitPrice = :unit,
@@ -89,13 +89,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['qty'])) {
                         TotalPrice = :total
                     WHERE CartItemID = :cid
                 ")->execute([
-                    ':q'     => $qty,
-                    ':unit'  => $unit,
-                    ':final' => $final,
-                    ':total' => $total,
-                    ':cid'   => $cartItemId
-                ]);
-            }
+                        ':q' => $qty,
+                        ':unit' => $unit,
+                        ':final' => $final,
+                        ':total' => $total,
+                        ':cid' => $cartItemId
+                    ]);
+        }
 
     }
     header('Location: cart.php');
@@ -172,7 +172,7 @@ foreach ($items as $i) {
                         class="header-menu-link <?php echo nav_active('aboutus.php', $currentPage); ?>">
                         Về chúng tôi
                     </a>
-                    
+
                 </nav>
             </div>
 
@@ -192,7 +192,7 @@ foreach ($items as $i) {
                         </div>
 
                         <span class="account-username">
-                       <strong><?php echo htmlspecialchars($currentUsername); ?></strong>
+                            <strong><?php echo htmlspecialchars($currentUsername); ?></strong>
                         </span>
                     </div>
                 <?php else: ?>
@@ -240,12 +240,12 @@ foreach ($items as $i) {
                                             <div class="cart-item-info">
                                                 <div class="cart-item-image">
                                                     <?php
-                                                        $imgSrc = '';
-                                                        if (!empty($item['ImageUrl'])) {
-                                                            $imgSrc = $item['ImageUrl'];
-                                                        } elseif (!empty($item['HasImage'])) {
-                                                            $imgSrc = "product-image.php?id=" . urlencode($item['ProductID']);
-                                                        }
+                                                    $imgSrc = '';
+                                                    if (!empty($item['ImageUrl'])) {
+                                                        $imgSrc = $item['ImageUrl'];
+                                                    } elseif (!empty($item['HasImage'])) {
+                                                        $imgSrc = "product-image.php?id=" . urlencode($item['ProductID']);
+                                                    }
                                                     ?>
 
                                                     <?php if ($imgSrc !== ''): ?>
@@ -348,10 +348,20 @@ foreach ($items as $i) {
                 <a href="index.php" class="footer-logo-link">
                     <img src="img/image.png?v=2" alt="Moonlit logo" class="footer-logo-img">
                 </a>
+
                 <p class="footer-desc">
                     Hiệu sách trực tuyến dành cho những tâm hồn yêu đọc.
                     Chúng tôi tin mỗi cuốn sách đều có ánh trăng riêng 🌙
                 </p>
+
+                <div class="footer-payment">
+                    <p class="footer-payment-title">Hỗ trợ thanh toán</p>
+
+                    <div class="footer-payment-logos">
+                        <img src="img/momo.png" alt="MoMo" class="footer-payment-logo">
+                        <img src="img/paypal.png" alt="PayPal" class="footer-payment-logo">
+                    </div>
+                </div>
             </div>
 
             <!-- COL 2 -->
@@ -389,7 +399,7 @@ foreach ($items as $i) {
         </div>
 
         <div class="footer-bottom">
-            © 2025 Moonlit — All rights reserved.
+            © 2026 Moonlit — All rights reserved.
         </div>
     </footer>
 </body>
