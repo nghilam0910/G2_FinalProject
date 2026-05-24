@@ -5,6 +5,41 @@ require_once 'mail_helper.php';
 $orderId = trim($_GET['orderId'] ?? '');
 $cancel  = isset($_GET['cancel']) && $_GET['cancel'] === '1';
 
+function ensurePayPalCustomerSession(PDO $pdo, array $order): void
+{
+    $orderUserId = $order['UserID'] ?? null;
+
+    if (!$orderUserId) {
+        return;
+    }
+
+    if (isset($_SESSION['user_id'])) {
+        if ($_SESSION['user_id'] == $orderUserId) {
+            return;
+        }
+
+        throw new Exception('Don hang PayPal khong thuoc tai khoan dang dang nhap.');
+    }
+
+    $stmtUser = $pdo->prepare("
+        SELECT UserID, Username, Role
+        FROM User_Account
+        WHERE UserID = :uid
+        LIMIT 1
+    ");
+    $stmtUser->execute([':uid' => $orderUserId]);
+    $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        return;
+    }
+
+    session_regenerate_id(true);
+    $_SESSION['user_id'] = $user['UserID'];
+    $_SESSION['username'] = $user['Username'];
+    $_SESSION['role'] = $user['Role'];
+}
+
 if ($orderId === '') {
     header('Location: account-index.php?section=tracking&payment=error&msg=' . urlencode('Không xác định được mã đơn hàng.'));
     exit;
@@ -25,6 +60,8 @@ try {
     if (!$order) {
         throw new Exception('Đơn hàng không tồn tại.');
     }
+
+    ensurePayPalCustomerSession($pdo, $order);
 
     if ($order['PaymentStatus'] === 'Completed') {
         $pdo->commit();
